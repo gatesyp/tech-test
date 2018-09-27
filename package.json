@@ -1,0 +1,6 @@
+{
+    "name":"Web-scraper"
+    "version":"1.0.0" //major.minor.patch
+    "license":""
+    "description":"A light, console based web-scraper for extracting company contact information."
+}
