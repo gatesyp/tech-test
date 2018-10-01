@@ -22,11 +22,13 @@ console.log(url); //Print full URL to console
 //https://www.ey.com/uk/en/home
 //https://www2.deloitte.com/uk/en.html
 
-request({
+var initialOptions = {
     method: 'GET',
-    url: 'https://www.canddi.com/contact'
-    
-}, function getContactUrl(error, response, body)
+    url: 'https://www.ey.com/uk/en/home/contact-us'
+    //url: url
+}
+   
+function getContactUrl(error, response, body)
 {
     if (error != null) {
         console.log(error);
@@ -34,19 +36,28 @@ request({
     
     let $ = cheerio.load(body); //In
     
-    //let contacts= $('a:contains("Contact")'); //Using cheerio we grab any a elements conntaining the text "Contact"
+    let contacts= $('a:contains("Contact")'); //Using cheerio we grab any a elements conntaining the text "Contact"
     
-    //console.log(contacts.attr('href')); //Here we return any attribute information stored, i.e. the link address, to the console
+    console.log(contacts.attr('href')); //Here we return any attribute information stored, i.e. the link address, to the console
     
-    //let contactUrl = contacts.attr('href'); //Here we take the href target url and store it in a new variable
+    let contactUrl = contacts.attr('href'); //Here we take the href target url and store it in a new variable
+    var newUrl = url + contactUrl; //And here we combine the two to get the contact page URL
     
-    //var newUrl = url + contactUrl; //And here we combine the two to get the contact page URL
-    //console.log(newUrl);
+    console.log(newUrl);
     
     let bodyText = $('body').text();
-    let bodyTextClean = bodyText.replace('.com', '.com '); //clean up --> is there a better way that'd also account for different endings, i.e. .co.uk? .net?
     
-    //console.log(bodyTextClean);
+    function textCleanUp(bodyText) { //Attempt at cleaning up the body text to make it more readable...
+        bodyText = bodyText.replace('.com', '.com ')
+        bodyText = bodyText.replace('.co.uk', 'co.uk ')
+        bodyText = bodyText.replace('.net', 'net ')
+        bodyText = bodyText.replace(/([A-Z])/g, ' $1') //Add whitespace before capital letters
+        return bodyText;
+    }
+    
+    let bodyTextClean = textCleanUp(bodyText);
+    
+    console.log(bodyTextClean);
     
     knwlInstance.init(bodyTextClean);
     
@@ -57,9 +68,10 @@ request({
     console.log(emails);
     console.log(phoneNums);
     console.log(addresses);
-}); 
+}    
+ 
+request(initialOptions, getContactUrl);
 
-//console.log(_newUrl);
 
 
 
