@@ -24,7 +24,7 @@ var addresses = [];
 
 var initialOptions = {
     method: 'GET',
-    url: 'https://www.canddi.com/contact' //Just point at this URL for the time being for testing
+    url: 'https://www.ey.com/uk/en/home/contact-us' //Just point at this URL for the time being for testing
     //url: url
 }
 
@@ -69,13 +69,13 @@ function getContactUrl(error, response, body)
     
     //scrape for emails and push to array
     let foundEmails = knwlInstance.get('emails')
-    foundEmails.forEach( (objEmail) => {
+    foundEmails.forEach((objEmail) => {
         emails.push(objEmail.address);
     });
     
     //scrape for phoneNums and push to array
     let foundPhoneNums = knwlInstance.get('phones');
-    foundPhoneNums.forEach( (phoneObj) => {
+    foundPhoneNums.forEach((phoneObj) => {
         phoneNums.push(phoneObj.phone);
     });
     
@@ -87,21 +87,21 @@ function getContactUrl(error, response, body)
     
     //delete any duplicate items in email array
     function deleteEmailDuplicates() {
-         emails = emails.filter( function(item, index, inputArray) {
+         emails = emails.filter(function(item, index, inputArray) {
            return inputArray.indexOf(item) == index;
         }
     )};
     
     //delete any duplicate items in phone array
     function deletePhoneNumDuplicates() {
-        phoneNums = phoneNums.filter( function(item, index, inputArray) {
+        phoneNums = phoneNums.filter(function(item, index, inputArray) {
            return inputArray.indexOf(item) == index;
         }
     )};
     
     //delete any duplicate items in addresses array
     function deleteAddressDuplicates() {
-        addresses = addresses.filter( function(item, index, inputArray) {
+        addresses = addresses.filter(function(item, index, inputArray) {
            return inputArray.indexOf(item) == index;
         }
     )};
