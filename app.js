@@ -5,7 +5,6 @@ const knwl = require('knwl.js');
 
 var knwlInstance = new knwl('english');
 
-
 var emailInput = readline.question('Enter email address: '); //Take user input for email
 var atPos = emailInput.indexOf('@'); //Position of '@' character in email string
 var emailLen = emailInput.length; //Length of email string
@@ -24,7 +23,7 @@ console.log(url); //Print full URL to console
 
 var initialOptions = {
     method: 'GET',
-    url: 'https://www.ey.com/uk/en/home/contact-us' //Just point at this URL for the time being for testing
+    url: 'https://www.canddi.com/contact' //Just point at this URL for the time being for testing
     //url: url
 }
    
@@ -45,15 +44,41 @@ function getContactUrl(error, response, body)
     
     console.log(newUrl);
     
-    let bodyText = $('body').text();
+    /*Here we can either select all elements with '*' or the body element with 'body'
+    When using * it seems to grab more separated elements but also creates lots
+    of duplicates ... with the body tag it treats it just as one element but 
+    this needs a lot of cleaning up...
+    */
+
+    let bodyText = $('body').text(); 
+    
+    /*
+    var textArray = [];
+    
+    //Note: here I'm trying to stop duplicates from populating the array but alas it doesn't seem to be working...
+    $('*').each(function(i, elem) {
+        
+        if (textArray.includes($(this).text()) === true) {
+                return;
+        }
+        else {
+            textArray.push($(this).text());
+        }
+    });
+    
+    textArray.join(', ');
+    */
     
     function textCleanUp(bodyText) { //Attempt at cleaning up the body text to make it more readable...
         bodyText = bodyText.replace('.com', '.com ')
         bodyText = bodyText.replace('.co.uk', 'co.uk ')
         bodyText = bodyText.replace('.net', 'net ')
         bodyText = bodyText.replace(/([A-Z])/g, ' $1') //Add whitespace before capital letters
+        bodyText = bodyText.replace(/[()]/g, '');
+        bodyText = bodyText.replace(/\s(?=\d)/g, '');
         return bodyText;
     }
+    
     
     let bodyTextClean = textCleanUp(bodyText);
     
@@ -63,11 +88,22 @@ function getContactUrl(error, response, body)
     
     var emails = knwlInstance.get('emails')
     var phoneNums = knwlInstance.get('phones');
-    var addresses = knwlInstance.get('places')
+    var addresses = [];
+    //var addresses = knwlInstance.get('places')
+    
+    //Addresses - here I want to use a RegExp expression such as ^\d+\s[A-z]+\s[A-z]+\,\s[A-z]+\,\s[A-z]+
+    //To try and locate addresses but I'm unsure how to 
+    var regExConstructor = new RegExp(bodyTextClean);
+    
+    function findAddresses() {
+        for (var i = 0; i < bodyTextClean.length; i++) {
+            
+        }
+    }
     
     console.log(emails);
+    //console.log(addresses);
     console.log(phoneNums);
-    console.log(addresses);
 }    
  
 request(initialOptions, getContactUrl);
