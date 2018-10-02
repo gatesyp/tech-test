@@ -29,14 +29,14 @@ var initialOptions = {
 }
 
 function textCleanUp(bodyText) { //Attempt at cleaning up the body text to make it more readable...
-        bodyText = bodyText.replace('.com', '.com ')
-        bodyText = bodyText.replace('.co.uk', 'co.uk ')
-        bodyText = bodyText.replace('.net', 'net ')
-        bodyText = bodyText.replace(/([A-Z])/g, ' $1') //Add whitespace before capital letters
-        bodyText = bodyText.replace(/[()]/g, '');
-        bodyText = bodyText.replace(/\s(?=\d)/g, '');
-        return bodyText;
-    }
+    bodyText = bodyText.replace('.com', '.com ')
+    bodyText = bodyText.replace('.co.uk', 'co.uk ')
+    bodyText = bodyText.replace('.net', 'net ')
+    bodyText = bodyText.replace(/([A-Z])/g, ' $1') //Add whitespace before capital letters
+    bodyText = bodyText.replace(/[()]/g, '');
+    bodyText = bodyText.replace(/\s(?=\d)/g, '');
+    return bodyText;
+}
    
 function getContactUrl(error, response, body)
 {
@@ -64,54 +64,55 @@ function getContactUrl(error, response, body)
 
     let bodyText = $('body').text(); 
     
-    /*
-    var textArray = [];
-    
-    //NOTE: here I'm trying to stop duplicates from populating the array but alas it doesn't seem to be working...
-    $('*').each(function(i, elem) {
-        
-        if (textArray.includes($(this).text()) == true) {
-                return;
-        }
-        else {
-            textArray.push($(this).text());
-        }
-    });
-    
-    textArray.join(', ');
-    */
-    
     let bodyTextClean = textCleanUp(bodyText);
     knwlInstance.init(bodyTextClean);
     
+    //scrape for emails and push to array
     let foundEmails = knwlInstance.get('emails')
     foundEmails.forEach( (objEmail) => {
         emails.push(objEmail.address);
     });
     
+    //scrape for phoneNums and push to array
     let foundPhoneNums = knwlInstance.get('phones');
     foundPhoneNums.forEach( (phoneObj) => {
         phoneNums.push(phoneObj.phone);
-    })
+    });
     
+    //simple but scrapes for postcodes
+    let addressRegEx = /[A-Z]{1,2}[0-9][0-9A-Z]?\s?[0-9][A-Z]{2}/g;
     let addresses = [];
-    //var addresses = knwlInstance.get('places')
     
-    //Addresses - here I want to use a RegExp expressions
-    //To try and locate addresses but I'm unsure how to so this is unfinished.
-    var regExConstructor = new RegExp(bodyTextClean);
+    addresses = body.match(addressRegEx);
     
-    function findAddresses() {
-        for (var i = 0; i < bodyTextClean.length; i++) {
-            addresses[i] = bodyTextClean.search(/^\d+\s[A-z]+\s[A-z]+\,\s[A-z]+\,\s[A-z]+/g);
+    //delete any duplicate items in email array
+    function deleteEmailDuplicates() {
+         emails = emails.filter( function(item, index, inputArray) {
+           return inputArray.indexOf(item) == index;
         }
-    }
+    )};
     
-    //findAddresses();
+    //delete any duplicate items in phone array
+    function deletePhoneNumDuplicates() {
+        phoneNums = phoneNums.filter( function(item, index, inputArray) {
+           return inputArray.indexOf(item) == index;
+        }
+    )};
     
-    console.log(emails);
-    console.log(phoneNums);
-    //console.log(addresses);
+    //delete any duplicate items in addresses array
+    function deleteAddressDuplicates() {
+        addresses = addresses.filter( function(item, index, inputArray) {
+           return inputArray.indexOf(item) == index;
+        }
+    )};
+    
+    deleteEmailDuplicates();
+    deletePhoneNumDuplicates();
+    deleteAddressDuplicates();
+    
+    console.log('Emails: ' + emails.join(', '));
+    console.log('Phone Numbers: ' + phoneNums.join(', '));
+    console.log('Addresses: ' + addresses.join(', '));
 }    
  
 request(initialOptions, getContactUrl);
