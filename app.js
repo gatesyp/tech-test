@@ -5,13 +5,13 @@ const knwl = require('knwl.js');
 
 var knwlInstance = new knwl('english');
 
-var emailInput = readline.question('Enter email address: '); //Take user input for email
+var emailInput = readline.question('Please enter an email address to check: '); //Take user input for email
 var atPos = emailInput.indexOf('@'); //Position of '@' character in email string
 var emailLen = emailInput.length; //Length of email string
 
 var urlRoot = emailInput.slice(atPos + 1, emailLen); //Slice the string to extract web address
 
-console.log('The relevant web address is: ' + urlRoot); //Print web address to console
+console.log('The associated web address is: ' + urlRoot); //Print web address to console
 
 var url = 'https://www.' + urlRoot; //Affix root
 
@@ -26,6 +26,16 @@ var initialOptions = {
     url: 'https://www.canddi.com/contact' //Just point at this URL for the time being for testing
     //url: url
 }
+
+function textCleanUp(bodyText) { //Attempt at cleaning up the body text to make it more readable...
+        bodyText = bodyText.replace('.com', '.com ')
+        bodyText = bodyText.replace('.co.uk', 'co.uk ')
+        bodyText = bodyText.replace('.net', 'net ')
+        bodyText = bodyText.replace(/([A-Z])/g, ' $1') //Add whitespace before capital letters
+        bodyText = bodyText.replace(/[()]/g, '');
+        bodyText = bodyText.replace(/\s(?=\d)/g, '');
+        return bodyText;
+    }
    
 function getContactUrl(error, response, body)
 {
@@ -33,6 +43,7 @@ function getContactUrl(error, response, body)
         console.log(error);
     } //Print error to console if an error occurs
     
+
     let $ = cheerio.load(body); //In
     
     let contacts= $('a:contains("Contact")'); //Using cheerio we grab any a elements conntaining the text "Contact"
@@ -55,10 +66,10 @@ function getContactUrl(error, response, body)
     /*
     var textArray = [];
     
-    //Note: here I'm trying to stop duplicates from populating the array but alas it doesn't seem to be working...
+    //NOTE: here I'm trying to stop duplicates from populating the array but alas it doesn't seem to be working...
     $('*').each(function(i, elem) {
         
-        if (textArray.includes($(this).text()) === true) {
+        if (textArray.includes($(this).text()) == true) {
                 return;
         }
         else {
@@ -68,17 +79,6 @@ function getContactUrl(error, response, body)
     
     textArray.join(', ');
     */
-    
-    function textCleanUp(bodyText) { //Attempt at cleaning up the body text to make it more readable...
-        bodyText = bodyText.replace('.com', '.com ')
-        bodyText = bodyText.replace('.co.uk', 'co.uk ')
-        bodyText = bodyText.replace('.net', 'net ')
-        bodyText = bodyText.replace(/([A-Z])/g, ' $1') //Add whitespace before capital letters
-        bodyText = bodyText.replace(/[()]/g, '');
-        bodyText = bodyText.replace(/\s(?=\d)/g, '');
-        return bodyText;
-    }
-    
     
     let bodyTextClean = textCleanUp(bodyText);
     
@@ -91,19 +91,21 @@ function getContactUrl(error, response, body)
     var addresses = [];
     //var addresses = knwlInstance.get('places')
     
-    //Addresses - here I want to use a RegExp expression such as ^\d+\s[A-z]+\s[A-z]+\,\s[A-z]+\,\s[A-z]+
-    //To try and locate addresses but I'm unsure how to 
+    //Addresses - here I want to use a RegExp expressions
+    //To try and locate addresses but I'm unsure how to so this is unfinished.
     var regExConstructor = new RegExp(bodyTextClean);
     
     function findAddresses() {
         for (var i = 0; i < bodyTextClean.length; i++) {
-            
+            addresses[i] = bodyTextClean.search(/^\d+\s[A-z]+\s[A-z]+\,\s[A-z]+\,\s[A-z]+/g);
         }
     }
     
+    //findAddresses();
+    
     console.log(emails);
-    //console.log(addresses);
     console.log(phoneNums);
+    //console.log(addresses);
 }    
  
 request(initialOptions, getContactUrl);
