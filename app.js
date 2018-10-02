@@ -1,5 +1,6 @@
 const readline = require('readline-sync'); //Required module for taking user inputs?
 const request = require('request');
+const rp = require('request-promise');
 const cheerio = require('cheerio');
 const knwl = require('knwl.js');
 
@@ -17,9 +18,9 @@ var url = 'https://www.' + urlRoot; //Affix root
 
 console.log(url); //Print full URL to console
 
-//Some URLs I've found this to work with so far:
-//https://www.ey.com/uk/en/home
-//https://www2.deloitte.com/uk/en.html
+var emails = [];
+var phoneNums = [];
+var addresses = [];
 
 var initialOptions = {
     method: 'GET',
@@ -81,14 +82,19 @@ function getContactUrl(error, response, body)
     */
     
     let bodyTextClean = textCleanUp(bodyText);
-    
-    console.log(bodyTextClean);
-    
     knwlInstance.init(bodyTextClean);
     
-    var emails = knwlInstance.get('emails')
-    var phoneNums = knwlInstance.get('phones');
-    var addresses = [];
+    let foundEmails = knwlInstance.get('emails')
+    foundEmails.forEach( (objEmail) => {
+        emails.push(objEmail.address);
+    });
+    
+    let foundPhoneNums = knwlInstance.get('phones');
+    foundPhoneNums.forEach( (phoneObj) => {
+        phoneNums.push(phoneObj.phone);
+    })
+    
+    let addresses = [];
     //var addresses = knwlInstance.get('places')
     
     //Addresses - here I want to use a RegExp expressions
