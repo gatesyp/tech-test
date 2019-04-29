@@ -24,8 +24,8 @@ var addresses = [];
 
 var initialOptions = {
     method: 'GET',
-    url: 'https://www.ey.com/uk/en/home/contact-us' //Just point at this URL for the time being for testing
-    //url: url
+    //url: 'https://www.ey.com/uk/en/home/contact-us' //Just point at this URL for the time being for testing
+    url: url
 }
 
 function textCleanUp(bodyText) { //Attempt at cleaning up the body text to make it more readable...
